@@ -1,4 +1,4 @@
-const STORE_KEY = "crashCartBatch_v1";
+const STORE_KEY = "crashCartBatch_v2";
 const CARTS = ["CC-01","CC-02","CC-03","CC-04"];
 const $ = (id) => document.getElementById(id);
 
@@ -6,13 +6,13 @@ function loadStore(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
     return raw ? JSON.parse(raw) : null;
-  }catch(e){
+  }catch{
     return null;
   }
 }
 
 function fmt(ts){
-  try{ return new Date(ts).toLocaleString(); }catch(e){ return "—"; }
+  try{ return new Date(ts).toLocaleString(); }catch{ return "—"; }
 }
 
 function badge(status){
@@ -22,34 +22,41 @@ function badge(status){
   return "⚪ Unknown";
 }
 
+function safe(v){
+  const s = (v == null ? "" : String(v));
+  return s.replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+
 function makeCard(cartId, data){
   const wrap = document.createElement("div");
-  wrap.className = "field full";
-  wrap.style.padding = "12px";
-  wrap.style.borderRadius = "14px";
-  wrap.style.border = "1px solid rgba(255,255,255,.10)";
-  wrap.style.background = "rgba(0,0,0,.20)";
+  wrap.className = "dash-card field full";
 
   const title = document.createElement("div");
-  title.style.fontWeight = "900";
-  title.style.marginBottom = "8px";
+  title.className = "dash-title";
   title.textContent = `${cartId} — ${badge(data?.status)}`;
 
+  const y = data?.sticker?.yellow || {};
+  const o = data?.sticker?.orange || {};
+
   const lines = [
-    `First Drug Exp: ${data?.firstDrugExp || "—"}`,
-    `Drug Name: ${data?.drugName || "—"}`,
-    `Lock #: ${data?.lockNumber || "—"}`,
-    `Checked On: ${data?.checkDoneOn || "—"}`,
-    `Initials: ${data?.initials || "—"}`,
-    `Notes: ${data?.notes || "—"}`,
-    `Saved At: ${data?.savedAt ? fmt(data.savedAt) : "—"}`
+    `<div><b>Sticker (Yellow)</b></div>`,
+    `<div>First supply: ${safe(y.firstSupply || "—")}</div>`,
+    `<div>Date: ${safe(y.date || "—")}</div>`,
+    `<div>Check done: ${safe(y.checkDone || "—")}</div>`,
+    `<div>Tech: ${safe(y.tech || "—")}</div>`,
+    `<div style="margin-top:8px"><b>Sticker (Orange)</b></div>`,
+    `<div>First Drug Exp: ${safe(o.firstDrugExp || "—")}</div>`,
+    `<div>Drug: ${safe(o.drugName || "—")}</div>`,
+    `<div>Lock #: ${safe(o.lockNumber || "—")}</div>`,
+    `<div>Check done on: ${safe(o.checkDoneOn || "—")}</div>`,
+    `<div>Initials: ${safe(o.initials || "—")}</div>`,
+    `<div style="margin-top:8px">Raw Notes: ${safe(data?.notes || "—")}</div>`,
+    `<div>Saved At: ${data?.savedAt ? safe(fmt(data.savedAt)) : "—"}</div>`
   ];
 
   const body = document.createElement("div");
-  body.style.color = "rgba(232,238,247,.85)";
-  body.style.fontSize = "14px";
-  body.style.lineHeight = "1.5";
-  body.innerHTML = lines.map(s => `<div>${s.replaceAll("<","&lt;")}</div>`).join("");
+  body.className = "dash-lines";
+  body.innerHTML = lines.join("");
 
   wrap.appendChild(title);
   wrap.appendChild(body);
