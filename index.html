@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c10" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Crash Cart Sticker</title>
+</head>
+<body>
+  <div class="wrap">
+    <!-- CLEAN STICKER PREVIEW (unchanged vibe) -->
+    <section class="sticker sticker-yellow" aria-label="Hospital Sticker Preview">
+      <div class="sticker-top">
+        <div class="sticker-hospital" id="hdrHospital">Providence<br>Holy Cross Hospital<br>Central Department</div>
+        <div class="sticker-phone" id="hdrPhone">818-496-1190</div>
+      </div>
+
+      <div class="sticker-title">CRASH CART CHECK</div>
+      <div class="sticker-line"></div>
+
+      <div class="sticker-rows">
+        <div class="row"><span>First supply to expire:</span><span class="blank">—</span></div>
+        <div class="row"><span>Date:</span><span class="blank">—</span></div>
+        <div class="row"><span>Check Date done:</span><span class="blank">—</span></div>
+        <div class="row"><span>CS tech:</span><span class="blank">—</span></div>
+      </div>
+    </section>
+
+    <section class="sticker sticker-orange" aria-label="Crash Cart Sticker Preview">
+      <div class="sticker-title alt">Crash Cart Check</div>
+      <div class="sticker-line dark"></div>
+
+      <div class="sticker-rows">
+        <div class="row"><span>First Drug to Exp:</span><span class="blank">—</span></div>
+        <div class="row"><span>Name of Drug:</span><span class="blank">—</span></div>
+        <div class="row"><span>Lock Number:</span><span class="blank">—</span></div>
+        <div class="row"><span>Check done on:</span><span class="blank">—</span></div>
+        <div class="row"><span>Initials:</span><span class="blank">—</span></div>
+      </div>
+    </section>
+
+    <!-- BATCH BAR (Checkbox row) -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Batch Round</div>
+        <div class="panel-sub" id="todayStamp">—</div>
+      </div>
+
+      <div class="batch">
+        <div class="batch-left">
+          <label class="field">
+            <span>CS Tech</span>
+            <input id="techName" type="text" inputmode="text" placeholder="Your name (saved)" />
+          </label>
+
+          <label class="field">
+            <span>Department</span>
+            <input id="deptName" type="text" inputmode="text" placeholder="Central Dept (optional)" />
+          </label>
+        </div>
+
+        <div class="batch-right">
+          <div class="batch-progress" aria-label="Carts completed this round">
+            <div class="progress-label">Progress</div>
+            <div class="checks" id="progressChecks">
+              <!-- injected -->
+            </div>
+          </div>
+
+          <div class="cart-picker">
+            <div class="progress-label">Cart</div>
+            <select id="cartId">
+              <option value="CC-01">CC-01</option>
+              <option value="CC-02">CC-02</option>
+              <option value="CC-03">CC-03</option>
+              <option value="CC-04">CC-04</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="btnSaveCart">Save Cart</button>
+        <button class="btn ghost" id="btnNextCart">Next Cart</button>
+        <button class="btn danger" id="btnSubmitBatch">Submit Batch (All 4)</button>
+      </div>
+
+      <div class="actions secondary">
+        <button class="btn ghost" id="btnOpenDashboard">Open Dashboard</button>
+        <button class="btn ghost" id="btnClearCart">Clear Current Cart</button>
+        <button class="btn ghost danger" id="btnResetRound">Reset Round</button>
+      </div>
+
+      <div class="hint" id="statusMsg">Ready.</div>
+    </section>
+
+    <!-- FORM (your working entry fields live under the clean sticker) -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Crash Cart Entry</div>
+        <div class="panel-sub" id="cartStamp">—</div>
+      </div>
+
+      <div class="grid">
+        <label class="field">
+          <span>First Drug to Exp</span>
+          <input id="firstDrugExp" type="text" placeholder="e.g., 01/2026" />
+        </label>
+
+        <label class="field">
+          <span>Name of Drug</span>
+          <input id="drugName" type="text" placeholder="e.g., Epi 1mg" />
+        </label>
+
+        <label class="field">
+          <span>Lock Number</span>
+          <input id="lockNumber" type="text" placeholder="e.g., 123456" />
+        </label>
+
+        <label class="field">
+          <span>Check done on</span>
+          <input id="checkDoneOn" type="date" />
+        </label>
+
+        <label class="field">
+          <span>Initials</span>
+          <input id="initials" type="text" placeholder="e.g., AD" maxlength="6" />
+        </label>
+
+        <label class="field">
+          <span>Status</span>
+          <select id="status">
+            <option value="OK">OK (Sealed)</option>
+            <option value="OPENED">Opened / Needs Restock</option>
+            <option value="MISSING">Missing Item(s)</option>
+          </select>
+        </label>
+
+        <label class="field full">
+          <span>Notes (optional)</span>
+          <textarea id="notes" rows="3" placeholder="Keep PHI out. Example: ‘Seal broken, replaced meds drawer’"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <small>PHI-free by design. Local save + batch submit. GitHub Pages friendly.</small>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
