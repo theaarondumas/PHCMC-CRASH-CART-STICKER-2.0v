@@ -1,4 +1,4 @@
-const STORE_KEY = "crashCartBatch_v2";
+const STORE_KEY = "crashCartBatch_v3";
 const CARTS = ["CC-01","CC-02","CC-03","CC-04"];
 const $ = (id) => document.getElementById(id);
 
@@ -50,7 +50,7 @@ function makeCard(cartId, data){
     `<div>Lock #: ${safe(o.lockNumber || "—")}</div>`,
     `<div>Check done on: ${safe(o.checkDoneOn || "—")}</div>`,
     `<div>Initials: ${safe(o.initials || "—")}</div>`,
-    `<div style="margin-top:8px">Raw Notes: ${safe(data?.notes || "—")}</div>`,
+    `<div style="margin-top:8px">Notes: ${safe(data?.notes || "—")}</div>`,
     `<div>Saved At: ${data?.savedAt ? safe(fmt(data.savedAt)) : "—"}</div>`
   ];
 
