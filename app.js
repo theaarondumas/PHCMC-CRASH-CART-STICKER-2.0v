@@ -1,10 +1,7 @@
-/* Crash Cart Batch (4 carts) + LIVE sticker preview + sticker snapshot in submissions
-   - localStorage only
-   - GitHub Pages friendly
-*/
+/* Crash Cart Batch (4 carts) + LIVE sticker preview + sticker snapshot in submissions */
 
 const CARTS = ["CC-01","CC-02","CC-03","CC-04"];
-const STORE_KEY = "crashCartBatch_v2";
+const STORE_KEY = "crashCartBatch_v3";
 
 const $ = (id) => document.getElementById(id);
 
@@ -42,14 +39,12 @@ function freshStore(){
       startedAt: Date.now(),
       carts: { "CC-01": null, "CC-02": null, "CC-03": null, "CC-04": null }
     },
-    submissions: [] // {submittedAt, round}
+    submissions: []
   };
 }
 
 function getStore(){
   const s = loadStore() || freshStore();
-
-  // auto-start new round each new day (keeps submissions history)
   if(s.activeRound?.date !== todayISO()){
     s.activeRound = {
       date: todayISO(),
@@ -64,7 +59,6 @@ function setStatus(msg){
   $("statusMsg").textContent = msg;
 }
 
-/* ---------- Live sticker preview helpers ---------- */
 function setText(id, val){
   const el = $(id);
   if(!el) return;
@@ -72,8 +66,14 @@ function setText(id, val){
   el.textContent = v;
 }
 
+/* ✅ Read/Fill all inputs (Yellow + Orange) */
 function readForm(){
   return {
+    // Yellow
+    firstSupplyExp: $("firstSupplyExp").value.trim(),
+    yellowCheckDoneOn: $("yellowCheckDoneOn").value || "",
+
+    // Orange
     firstDrugExp: $("firstDrugExp").value.trim(),
     drugName: $("drugName").value.trim(),
     lockNumber: $("lockNumber").value.trim(),
@@ -84,10 +84,29 @@ function readForm(){
   };
 }
 
+function fillForm(data){
+  // Yellow
+  $("firstSupplyExp").value = data?.firstSupplyExp || "";
+  $("yellowCheckDoneOn").value = data?.yellowCheckDoneOn || "";
+
+  // Orange
+  $("firstDrugExp").value = data?.firstDrugExp || "";
+  $("drugName").value = data?.drugName || "";
+  $("lockNumber").value = data?.lockNumber || "";
+  $("checkDoneOn").value = data?.checkDoneOn || "";
+  $("initials").value = data?.initials || "";
+  $("status").value = data?.status || "OK";
+  $("notes").value = data?.notes || "";
+}
+
+/* ✅ Sticker snapshot uses Yellow + Orange fields */
 function buildStickerSnapshot(store, cartId){
   const cartData = store.activeRound.carts[cartId] || {};
   const tech = ($("techName").value || store.profile.techName || "").trim();
   const live = readForm();
+
+  const firstSupplyExp     = (live.firstSupplyExp     || cartData.firstSupplyExp     || "").trim();
+  const yellowCheckDoneOn  = (live.yellowCheckDoneOn  || cartData.yellowCheckDoneOn  || "").trim();
 
   const firstDrugExp = (live.firstDrugExp || cartData.firstDrugExp || "").trim();
   const drugName     = (live.drugName     || cartData.drugName     || "").trim();
@@ -97,9 +116,9 @@ function buildStickerSnapshot(store, cartId){
 
   return {
     yellow: {
-      firstSupply: drugName || "—",
+      firstSupply: firstSupplyExp || "—",
       date: store.activeRound.date || todayISO(),
-      checkDone: checkDoneOn || "—",
+      checkDone: yellowCheckDoneOn || "—",
       tech: tech || "—"
     },
     orange: {
@@ -120,21 +139,23 @@ function updateStickerPreview(){
 
   const tech = ($("techName").value || store.profile.techName || "").trim();
 
-  // Yellow sticker
-  setText("pv_firstSupply", live.drugName || cartData.drugName || "");
+  // Yellow sticker preview
+  setText("pv_firstSupply", live.firstSupplyExp || cartData.firstSupplyExp || "");
   setText("pv_date", store.activeRound.date);
-  setText("pv_checkDone", live.checkDoneOn || cartData.checkDoneOn || "");
+  setText("pv_checkDone", live.yellowCheckDoneOn || cartData.yellowCheckDoneOn || "");
   setText("pv_tech", tech);
 
-  // Orange sticker
+  // Orange sticker preview
   setText("pv_firstDrugExp", live.firstDrugExp || cartData.firstDrugExp || "");
   setText("pv_drugName", live.drugName || cartData.drugName || "");
   setText("pv_lockNumber", live.lockNumber || cartData.lockNumber || "");
-  setText("pv_checkDoneOn", live.checkDoneOn || cartData.checkDoneOn || "");
+  setText("pv_orangeCheckDoneOn", live.checkDoneOn || cartData.checkDoneOn || "");
   setText("pv_initials", live.initials || cartData.initials || "");
+
+  // stamps
+  $("yellowStamp").textContent = `Yellow • ${nowStamp()}`;
 }
 
-/* ---------- UI render ---------- */
 function buildProgressChecks(store){
   const box = $("progressChecks");
   box.innerHTML = "";
@@ -156,16 +177,6 @@ function buildProgressChecks(store){
     item.appendChild(tag);
     box.appendChild(item);
   });
-}
-
-function fillForm(data){
-  $("firstDrugExp").value = data?.firstDrugExp || "";
-  $("drugName").value = data?.drugName || "";
-  $("lockNumber").value = data?.lockNumber || "";
-  $("checkDoneOn").value = data?.checkDoneOn || "";
-  $("initials").value = data?.initials || "";
-  $("status").value = data?.status || "OK";
-  $("notes").value = data?.notes || "";
 }
 
 function cartSummary(data){
@@ -194,11 +205,9 @@ function render(){
 
   fillForm(data || null);
 
-  // 🔥 make sticker always reflect current state
   updateStickerPreview();
 }
 
-/* ---------- Actions ---------- */
 function persistProfile(){
   const store = getStore();
   store.profile.techName = $("techName").value.trim();
@@ -214,7 +223,7 @@ function saveCurrentCart(){
 
   const payload = readForm();
 
-  // basic PHI guardrail
+  // PHI guardrail
   const combined = JSON.stringify(payload).toLowerCase();
   if(combined.includes("mrn") || combined.includes("medical record") || combined.includes("dob")){
     setStatus("⚠️ PHI detected (mrn/dob). Remove it and save again.");
@@ -227,7 +236,7 @@ function saveCurrentCart(){
     ...payload,
     savedAt: Date.now(),
     cartId,
-    sticker // ✅ sticker snapshot stored with cart
+    sticker
   };
 
   saveStore(store);
@@ -282,7 +291,7 @@ function submitBatch(){
     return;
   }
 
-  // ✅ Ensure every cart has sticker snapshot frozen at submit time
+  // ensure sticker snapshots exist at submit time
   CARTS.forEach(id => {
     const cart = store.activeRound.carts[id];
     if(cart){
@@ -295,12 +304,8 @@ function submitBatch(){
   roundCopy.deptName = store.profile.deptName;
   roundCopy.submittedAt = Date.now();
 
-  store.submissions.unshift({
-    submittedAt: Date.now(),
-    round: roundCopy
-  });
+  store.submissions.unshift({ submittedAt: Date.now(), round: roundCopy });
 
-  // start a fresh round after submit
   store.activeRound = {
     date: todayISO(),
     startedAt: Date.now(),
@@ -314,16 +319,14 @@ function submitBatch(){
   window.open("dashboard.html", "_blank");
 }
 
-/* ---------- Init ---------- */
 function init(){
-  // default date
+  // default dates
   $("checkDoneOn").value = todayISO();
+  $("yellowCheckDoneOn").value = todayISO();
 
-  // make sure store exists
   const store = getStore();
   saveStore(store);
 
-  // events
   $("cartId").addEventListener("change", render);
 
   $("techName").addEventListener("blur", () => { persistProfile(); setStatus("Saved your name."); updateStickerPreview(); });
@@ -341,8 +344,11 @@ function init(){
 
   $("btnOpenDashboard").addEventListener("click", () => window.open("dashboard.html","_blank"));
 
-  // LIVE preview updates while typing
-  const liveIds = ["firstDrugExp","drugName","lockNumber","checkDoneOn","initials","notes","status"];
+  // live preview updates while typing (Yellow + Orange)
+  const liveIds = [
+    "firstSupplyExp","yellowCheckDoneOn",
+    "firstDrugExp","drugName","lockNumber","checkDoneOn","initials","notes","status"
+  ];
   liveIds.forEach(id => {
     const el = $(id);
     if(el){
