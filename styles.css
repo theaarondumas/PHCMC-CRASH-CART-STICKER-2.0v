@@ -255,12 +255,10 @@ input::placeholder, textarea::placeholder{ color:rgba(232,238,247,.45); }
   border:1px solid rgba(255,255,255,.10);
   background:rgba(0,0,0,.20);
 }
-
 .dash-title{
   font-weight:900;
   margin-bottom:8px;
 }
-
 .dash-lines{
   color:rgba(232,238,247,.85);
   font-size:14px;
