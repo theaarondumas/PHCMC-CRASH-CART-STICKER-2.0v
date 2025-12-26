@@ -10,7 +10,7 @@
 <body>
   <div class="wrap">
 
-    <!-- CLEAN STICKER PREVIEW (LIVE) -->
+    <!-- STICKER PREVIEW (LIVE) -->
     <section class="sticker sticker-yellow" aria-label="Hospital Sticker Preview">
       <div class="sticker-top">
         <div class="sticker-hospital" id="hdrHospital">Providence<br>Holy Cross Hospital<br>Central Department</div>
@@ -36,12 +36,12 @@
         <div class="row"><span>First Drug to Exp:</span><span class="blank" id="pv_firstDrugExp">—</span></div>
         <div class="row"><span>Name of Drug:</span><span class="blank" id="pv_drugName">—</span></div>
         <div class="row"><span>Lock Number:</span><span class="blank" id="pv_lockNumber">—</span></div>
-        <div class="row"><span>Check done on:</span><span class="blank" id="pv_checkDoneOn">—</span></div>
+        <div class="row"><span>Check done on:</span><span class="blank" id="pv_orangeCheckDoneOn">—</span></div>
         <div class="row"><span>Initials:</span><span class="blank" id="pv_initials">—</span></div>
       </div>
     </section>
 
-    <!-- BATCH BAR (Checkbox row) -->
+    <!-- BATCH BAR -->
     <section class="panel">
       <div class="panel-head">
         <div class="panel-title">Batch Round</div>
@@ -52,12 +52,12 @@
         <div class="batch-left">
           <label class="field">
             <span>CS Tech</span>
-            <input id="techName" type="text" inputmode="text" placeholder="Your name (saved)" />
+            <input id="techName" type="text" placeholder="Your name (saved)" />
           </label>
 
           <label class="field">
             <span>Department</span>
-            <input id="deptName" type="text" inputmode="text" placeholder="Central Dept (optional)" />
+            <input id="deptName" type="text" placeholder="Central Dept (optional)" />
           </label>
         </div>
 
@@ -94,10 +94,30 @@
       <div class="hint" id="statusMsg">Ready.</div>
     </section>
 
-    <!-- ENTRY FORM -->
+    <!-- ✅ YELLOW STICKER INPUTS (NEW) -->
     <section class="panel">
       <div class="panel-head">
-        <div class="panel-title">Crash Cart Entry</div>
+        <div class="panel-title">Yellow Sticker Inputs</div>
+        <div class="panel-sub" id="yellowStamp">—</div>
+      </div>
+
+      <div class="grid">
+        <label class="field">
+          <span>First supply to expire</span>
+          <input id="firstSupplyExp" type="text" placeholder="e.g., IV Start Kit 02/2026" />
+        </label>
+
+        <label class="field">
+          <span>Check Date done</span>
+          <input id="yellowCheckDoneOn" type="date" />
+        </label>
+      </div>
+    </section>
+
+    <!-- ✅ ORANGE STICKER INPUTS -->
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Orange Sticker Inputs</div>
         <div class="panel-sub" id="cartStamp">—</div>
       </div>
 
